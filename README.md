@@ -1,0 +1,1 @@
+JavaScript re-implementation of my [unfinished C# CHIP-8 emulator](https://github.com/ironlanderl/Chip8Emu)
