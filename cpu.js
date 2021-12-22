@@ -14,7 +14,7 @@ class CPU{
     // I?
     I = 0;
     // Program counter
-    PC = 0;
+    PC = 0x200;
 
 
     // Stack
@@ -28,7 +28,6 @@ class CPU{
     CaricaROM(ROM){
         // La ROM viene caricata in ram a partire dall'indirizzo 0x200
         let j = 0x200;
-        debugger;
         for(let i = 0; i < ROM.length; i++){
             this.RAM[j] = ROM[i];
             j++
@@ -61,7 +60,14 @@ class CPU{
         }
     }
 
+    Fetch(){
+        // Split the instruction in two parts
+        let opcode1 = this.RAM[this.PC].toString(16).padStart(2, "0");
+        let opcode2 = this.RAM[this.PC + 1].toString(16).padStart(2, "0");
+        this.istruzione = opcode1 + opcode2;
 
+        this.PC += 2;
+    }
 
 
 
@@ -106,7 +112,8 @@ class CPU{
 
     constructor(ROM){
         this.CaricaROM(ROM);
-        debugger;
         this.CaricaFont();
+        debugger;
+        this.Fetch();
     }
 }

@@ -12,10 +12,3 @@ function CaricaROM() {
     };
     reader.readAsArrayBuffer(file);
 }
-
-// Event Handler per l'input della ROM
-const fileInput = document.getElementById("file");
-fileInput.onchange = () => {
-  const selectedFile = fileInput.files[0];
-  console.log(selectedFile);
-}
