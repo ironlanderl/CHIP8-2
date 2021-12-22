@@ -23,7 +23,7 @@ class CPU{
     // Stack pointer
     SP = 0;
 
-    istruzione = "";
+    opcode = 0x0000;
 
     CaricaROM(ROM){
         // La ROM viene caricata in ram a partire dall'indirizzo 0x200
@@ -62,17 +62,22 @@ class CPU{
 
     Fetch(){
         // Split the instruction in two parts
-        let opcode1 = this.RAM[this.PC].toString(16).padStart(2, "0");
-        let opcode2 = this.RAM[this.PC + 1].toString(16).padStart(2, "0");
-        this.istruzione = opcode1 + opcode2;
-
+        this.opcode = this.RAM[this.PC] | this.RAM[this.PC + 1];
         this.PC += 2;
     }
 
 
-
-
-
+    Execute(){
+        // Decode
+        let a = (this.opcode & 0xF000) >> 12;
+        let x = (this.opcode & 0x0F00) >> 8;
+        let y = (this.opcode & 0x00F0) >> 4;
+        let n = this.opcode & 0x000F;
+        let nn = this.opcode & 0x00FF;
+        let nnn = this.opcode & 0x0FFF;
+        
+        // Execute
+    }
 
 
 
@@ -115,5 +120,6 @@ class CPU{
         this.CaricaFont();
         debugger;
         this.Fetch();
+        this.Execute();
     }
 }
