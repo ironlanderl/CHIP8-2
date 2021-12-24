@@ -22,7 +22,11 @@ class CPU{
     /**@type {Array} */
     stack = new Uint16Array(this.STACK_SIZE);
     // Stack pointer
-    SP = 0;
+    SP = -1;
+
+    // Timers
+    sound = 0;
+    delay = 0;
 
     opcode = 0x0000;
 
@@ -61,13 +65,19 @@ class CPU{
         }
     }
 
-    /*MainLoop(){
-        this.Fetch();
-        this.Execute();
-    }*/
+    Timers(){
+        if (this.sound > 0){
+            this.sound--;
+        }
+        else{
+            var audio = new Audio('beep.wav');
+            audio.play();
+        }
+        if (this.delay > 0)
+            this.delay--;
+    }   
 
     Fetch(){
-        // Split the instruction in two parts
         // La prima parte deve essere spostata a sinistra di 8 bit
         this.opcode = this.RAM[this.PC] << 8 | this.RAM[this.PC + 1];
         this.PC += 2;
@@ -99,8 +109,8 @@ class CPU{
                 break;
 
             case 2:
-                this.stack[this.SP];
                 this.SP++;
+                this.stack[this.SP] = this.PC;
                 this.PC = NNN;
                 break;
             case 3:
@@ -156,23 +166,36 @@ class CPU{
                         // Save LSB
                         this.V[0xF] = this.V[X] & 1;
                         // Move V[X] to the right
-                        this.V[X] = this.V[X] >>> 1
+                        this.V[X] >>= 1
                         break;
-
+                    case 7:
+                        this.V[0xF] = (this.V[X] < this.V[Y]) ? 1 : 0;
+                        this.V[X] = this.V[Y] - this.V[X];
+                        break;
+                    case 0xE:
+                        this.V[0xF] = this.V[X] & 0b10000000;
+                        // Move V[X] to the left
+                        this.V[X] <<= 1
+                        break;
                     default:
                         console.log("Unkown OPCODE: " + this.opcode.toString(16));
                         break;
                 }
                 break;
-
-
-
-
-
+            case 0x9:
+                if(this.V[X] != this.V[Y]){
+                    this.PC += 2;
+                }
+                break;
             case 0xA:
                 this.I = NNN;
                 break;
-
+            case 0xB:
+                this.PC = this.V[0x0] + NNN;
+                break;
+            case 0xC:
+                this.V[X] = Math.floor(Math.random() * 256) & NN;
+                break;
             case 0xD:
                 //debugger;
                 // Prendo le coordinate dove disegnare
@@ -211,6 +234,41 @@ class CPU{
                     }
                 }
                 break;
+            // Controller input
+            case 0xE:
+                break;
+
+            case 0xF:
+                switch (NN)
+                {
+                    case 0x07:
+                        this.V[X] = this.delay;
+                        break;
+                    case 0x0A:
+                        //TODO
+                        break;
+                    case 0x15:
+                        this.delay = this.V[X];
+                        break;
+                    case 0x18:
+                        this.sound = this.V[X];
+                        break;
+                    case 0x1E:
+                        this.I += this.V[X];
+                        break;
+                    case 0x29:
+                        this.I = this.V[X] * 5;
+                        break;
+
+
+                    default:
+                        console.log("Unkown OPCODE: " + this.opcode.toString(16));
+                        break;
+                }
+                break;
+
+
+
 
             default:
                 console.log("Unkown OPCODE: " + this.opcode.toString(16));

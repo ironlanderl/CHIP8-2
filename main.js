@@ -17,7 +17,8 @@ function CaricaROM() {
         var data = reader.result;
         ROM = new Uint8Array(data);
         cpu = new CPU(ROM);
-        setInterval(MainLoop, 1);
+        setInterval(MainLoop, 1 / 500 * 1000);
+        setInterval(cpu.Timers, 1 / 60 * 1000);
         animationID = window.requestAnimationFrame(DisegnaSchermo);
     };
     reader.readAsArrayBuffer(file);
