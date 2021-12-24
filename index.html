@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <title>CHIP-8 Emulator</title>
     </head>
-    <body>
+    <body onload="init()">
         <input type="file" id="file" name="file" accept=".ch8">
         <button id="load" onclick="CaricaROM()">Load</button>
         <canvas id="screen" width="640" height="320"></canvas>
