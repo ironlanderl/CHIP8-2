@@ -8,6 +8,10 @@ var ctx;
 const SCREEN_WIDTH = 64;
 const SCREEN_HEIGHT = 32;
 
+var input = EmptyBoolArray(16);
+const mapping = new Array("1", "2", "3", "4", "Q", "W", "E", "R", "A", "S", "D",
+                            "F", "Z", "X", "C", "V");
+
 
 // Function to load the ROM from the input tag with id "file" to the ROM uint8array
 function CaricaROM() {
@@ -56,4 +60,36 @@ function init(){
     ctx.fillStyle = "black";
     // Ingrandiso
     ctx.scale(10,10);
+
+    // Event Handel per i controlli
+    document.body.addEventListener("keydown", ev => InputDown(ev));
+    document.body.addEventListener("keyup", ev => InputUp(ev));
+}
+
+function InputDown(/**@type {KeyboardEvent} */ ev) {
+    for (let i = 0; i < mapping.length; i++){
+       if (mapping[i] === ev.key.toUpperCase()){
+           input[i] = true;
+           console.log(input);
+           return;
+       }
+    }
+}
+
+function InputUp(/**@type {KeyboardEvent} */ ev) {
+    for (let i = 0; i < mapping.length; i++){
+       if (mapping[i] === ev.key.toUpperCase()){
+           input[i] = false
+           console.log(input);
+           return;
+       }
+    }
+}
+
+function EmptyBoolArray(size) {
+    let array = new Array(size)
+    for (let i = 0; i < size; i++){
+        array[i] = false;
+    }
+    return array;
 }
