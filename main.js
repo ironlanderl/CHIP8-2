@@ -9,8 +9,10 @@ const SCREEN_WIDTH = 64;
 const SCREEN_HEIGHT = 32;
 
 var input = EmptyBoolArray(16);
-const mapping = new Array("1", "2", "3", "4", "Q", "W", "E", "R", "A", "S", "D",
-                            "F", "Z", "X", "C", "V");
+const mapping = new Array(  "1", "2", "3", "4",
+                            "Q", "W", "E", "R",
+                            "A", "S", "D", "F",
+                            "Z", "X", "C", "V");
 
 
 // Function to load the ROM from the input tag with id "file" to the ROM uint8array
@@ -29,13 +31,14 @@ function CaricaROM() {
 }
 
 function MainLoop(){
+    cpu.PrendiInput(input);
     cpu.Fetch();
     cpu.Execute();
 }
 
 function DisegnaSchermo(){
     // Prendo lo schermo
-    let schermo = cpu.schermo
+    let schermo = cpu.schermo;
 
     // Pulisco il canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -79,7 +82,7 @@ function InputDown(/**@type {KeyboardEvent} */ ev) {
 function InputUp(/**@type {KeyboardEvent} */ ev) {
     for (let i = 0; i < mapping.length; i++){
        if (mapping[i] === ev.key.toUpperCase()){
-           input[i] = false
+           input[i] = false;
            console.log(input);
            return;
        }
@@ -87,7 +90,7 @@ function InputUp(/**@type {KeyboardEvent} */ ev) {
 }
 
 function EmptyBoolArray(size) {
-    let array = new Array(size)
+    let array = new Array(size);
     for (let i = 0; i < size; i++){
         array[i] = false;
     }

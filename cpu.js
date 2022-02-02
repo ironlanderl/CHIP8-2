@@ -28,6 +28,9 @@ class CPU{
     sound = 0;
     delay = 0;
 
+    // Keyboard
+    keyboard = [];
+
     opcode = 0x0000;
 
     CaricaROM(ROM){
@@ -37,6 +40,10 @@ class CPU{
             this.RAM[j] = ROM[i];
             j++
         }
+    }
+
+    PrendiInput(keyboard){
+        this.keyboard = keyboard;
     }
 
     CaricaFont(){
@@ -66,15 +73,16 @@ class CPU{
     }
 
     Timers(){
-        if (this.sound > 0){
-            this.sound--;
+        if (cpu.sound > 0){
+            cpu.sound--;
         }
         else{
             var audio = new Audio('beep.wav');
-            audio.play();
+            //audio.play();
         }
-        if (this.delay > 0)
-            this.delay--;
+        if (cpu.delay > 0){
+            cpu.delay--;
+        }
     }   
 
     Fetch(){
@@ -236,6 +244,18 @@ class CPU{
                 break;
             // Controller input
             case 0xE:
+                if (NN == 0x9E){
+                    if(this.keyboard[this.V[X]]){
+                        this.PC += 2;
+                        break;
+                    }
+                }
+                if (NN == 0xA1){
+                    if(!this.keyboard[this.V[X]]){
+                        this.PC += 2;
+                        break;
+                    }
+                }
                 break;
 
             case 0xF:
@@ -245,7 +265,19 @@ class CPU{
                         this.V[X] = this.delay;
                         break;
                     case 0x0A:
-                        //TODO
+                        let key = -1;
+                        for (let i = 0; i < this.keyboard.length; i++){
+                            if (this.keyboard[i]){
+                                key = i;
+                            }
+                        }
+                        // Se non è stato premuto nessun pulsante torno all'istruzione precedente, che sarebbe quella attualmente in esecuzione
+                        if (key == -1){
+                            this.PC -= 2;
+                            break;
+                        }
+                        // Altrimenti ritorno il valore
+                        this.V[X] = key;
                         break;
                     case 0x15:
                         this.delay = this.V[X];
@@ -259,8 +291,19 @@ class CPU{
                     case 0x29:
                         this.I = this.V[X] * 5;
                         break;
-
-
+                    case 0x33:
+                        console.log("Unkown OPCODE: " + this.opcode.toString(16));
+                        break;
+                    case 0x55:
+                        for (let i = 0; i <= X; i++){
+                            this.RAM[this.I + i] = this.V[i];
+                        }
+                        break;
+                    case 0x65:
+                        for (let i = 0; i <= X; i++){
+                            this.V[i] = this.RAM[this.I + i];
+                        }
+                        break;
                     default:
                         console.log("Unkown OPCODE: " + this.opcode.toString(16));
                         break;
